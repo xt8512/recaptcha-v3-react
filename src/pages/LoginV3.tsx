@@ -4,7 +4,7 @@ import {
   TextField,
 } from "@fluentui/react";
 
-import { GoogleReCaptcha, GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
+import { GoogleReCaptcha } from "react-google-recaptcha-v3";
 import { getErrorByEmail, getErrorByLength } from "../utils/rules";
 import { useLogin } from "../hooks/useLogin";
 import { FormEvent, useState } from "react";
@@ -31,7 +31,7 @@ function LoginV3() {
 
     ResetRecaptchaResponse()
     ResetLoginResponse()
-
+    
     await onReCaptchaVerify();
     await AuthSignIn().then(()=>{
       setShowRecaptcha(false)
@@ -44,8 +44,8 @@ function LoginV3() {
   };
 
   return (
-    <GoogleReCaptchaProvider key={'formulario'} reCaptchaKey={import.meta.env.VITE_REACT_APP_RECAPTCHA_API_KEY}>
       <LoginLayout onSubmit={handleSubmit} title="SignIn V3">
+
         {/* INPUTS  */}
         <TextField
           label="Username"
@@ -119,7 +119,6 @@ function LoginV3() {
 
         <ButtonPrimary loading={loading || loadingRecaptcha} />
       </LoginLayout>
-    </GoogleReCaptchaProvider>
   );
 }
 

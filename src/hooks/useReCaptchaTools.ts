@@ -30,6 +30,10 @@ export const useReCaptchaTools = () => {
       setLoading(true);
 
       const token: string = await executeRecaptcha("register");
+
+      console.log(token);
+      
+
       setToken(token);
 
       const { data } = await axios.post<ResponseReCaptcha>(
@@ -37,7 +41,7 @@ export const useReCaptchaTools = () => {
         {
           token,
         }
-      );
+      )
 
       setRefreshCaptcha(() => (data.score <= 0.5 ? true : false));
 
@@ -45,6 +49,8 @@ export const useReCaptchaTools = () => {
 
       return { ...data, token };
     } catch (error) {
+      console.log(error);
+      
       setRefreshCaptcha(true);
     } finally {
       setLoading(false);

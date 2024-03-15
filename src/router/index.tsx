@@ -1,12 +1,12 @@
 import { createBrowserRouter } from "react-router-dom";
 // pages
-import LoginV3 from '@/pages/LoginV3'
+import ToGoogle from '@/pages/ToGoogle'
 import LoginV2 from "@/pages/LoginV2";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <LoginV3 />,
+    element: <ToGoogle />,
   },
   {
     path: "/v2",
