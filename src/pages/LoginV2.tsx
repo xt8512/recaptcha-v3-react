@@ -5,15 +5,17 @@ import {
 } from "@fluentui/react";
 
 import { getErrorByEmail, getErrorByLength } from "../utils/rules";
-import { useLogin } from "../hooks/useLogin";
-import { FormEvent, useEffect, useState } from "react";
+import { useLogin } from "@/hooks/useLogin";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import LoginLayout from "@/layout/LoginLayout";
 import ButtonPrimary from "@/packages/ButtonPrimary";
-import ReCaptcha from "@/components/ReCaptcha";
+import ReCaptcha, {ReCaptchaRef} from "@/components/ReCaptcha";
 
 function LoginV2() {
   const [token, setToken] = useState("")
   const [submitEnabled, setSubmitEnabled] = useState(false);
+
+  const recaptchaRef = useRef<ReCaptchaRef>(null)
   
   const { loading, error, credentials, loginResponse, onChange, AuthSignIn, ResetLoginResponse } = useLogin();
 
@@ -32,7 +34,13 @@ function LoginV2() {
 
     ResetLoginResponse()
 
-    await AuthSignIn()
+    try {
+      await AuthSignIn()
+    } catch (error) {
+      setSubmitEnabled(false)
+      recaptchaRef.current?.reset()
+    }
+
   };
 
   return (
@@ -61,7 +69,7 @@ function LoginV2() {
       />
 
       <div>
-        <ReCaptcha callback={handleToken} />
+        <ReCaptcha ref={recaptchaRef} callback={handleToken} />
       </div>
 
       <div>

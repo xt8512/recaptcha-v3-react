@@ -7,10 +7,18 @@ type Credentials = {
 
 type LoginResponse = {
   message: string;
+  success: boolean;
 } & Credentials;
+
+interface Error {
+  name: string;
+  message: string;
+  stack?: string;
+}
 
 type ErrorResponse = {
   message: string;
+  success: boolean;
 };
 
 const initState: Credentials = {
@@ -21,9 +29,7 @@ const initState: Credentials = {
 export const useLogin = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<ErrorResponse | null>(null);
-  const [loginResponse, setLoginResponse] = useState<LoginResponse | null>(
-    null
-  );
+  const [loginResponse, setLoginResponse] = useState<LoginResponse | null>(null);
   const [credentials, setCredentials] = useState<Credentials>(initState);
 
   function onChange(
@@ -46,18 +52,31 @@ export const useLogin = () => {
     try {
       return await new Promise<LoginResponse>((resolve, reject) => {
         setTimeout(() => {
-          if (credentials.password === initState.password) {
-            const login = { ...credentials, message: "Ingreso correctamente" };
+          try {
+            if (credentials.password === initState.password) {
+              const login = {
+                ...credentials,
+                success: true,
+                message: "Ingreso correctamente",
+              };
+              setLoginResponse(login);
+              resolve(login);
+            } else {
+              throw new Error("Contraseña incorrecta");
+            }
+          } catch (error) {
+            const ErrorPromise = error as Error;
 
-            setLoginResponse(login);
-            resolve(login);
-          } else {
-            reject({ message: "Contraseña incorrecta" });
+            reject({ success: false, message: ErrorPromise.message });
           }
-        }, 2000);
+        }, 1000);
       });
     } catch (error) {
-      setError(error as ErrorResponse);
+      const ErrorPromise = error as ErrorResponse;
+
+      setError(ErrorPromise);
+      
+      throw ErrorPromise
     } finally {
       setLoading(false);
     }
