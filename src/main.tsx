@@ -1,7 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-// google
-// import { GoogleReCaptchaProvider } from "react-google-recaptcha-v3";
 // ui icons
 import { initializeIcons } from "@fluentui/react/lib/Icons";
 // react-router-dom
