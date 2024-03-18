@@ -1,12 +1,36 @@
-import { decryptAmiAES, encryptAmiAES } from "@/utils/crypto";
 import axios from "axios";
+import { encryptAmiAES } from "@/utils/crypto";
 import { useState } from "react";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
+type ResponseReCaptchaPayload = {
+    response: string;
+}
+
+type ResponseReCaptchaStatus = {
+    success: boolean;
+}
+
 type ResponseReCaptcha = {
-  mensaje: string;
-  score: number;
+  payload: ResponseReCaptchaPayload;
+  status: ResponseReCaptchaStatus;
 };
+
+type ResponseReCaptchaErrorBody = {
+    code:string;
+    httpCode:number;
+    message:string;
+}
+
+type ResponseReCaptchaErrorStatus = {
+    success:boolean;
+    error: ResponseReCaptchaErrorBody;
+}
+
+type ResponseReCaptchaError = {
+    payload: null;
+    status: ResponseReCaptchaErrorStatus;
+}
 
 export const useRecaptcha = () => {
   const { executeRecaptcha } = useGoogleReCaptcha();
@@ -14,8 +38,8 @@ export const useRecaptcha = () => {
   const [isActiveV2, setIsActiveV2] = useState(false);
   const [token, setToken] = useState<string>("");
 
-  const [RecaptchaResponse, setRecaptchaResponse] =
-    useState<ResponseReCaptcha | null>(null);
+  const [RecaptchaResponse, setRecaptchaResponse] = useState<ResponseReCaptcha | null>(null);
+  const [RecaptchaError, setRecaptchaError] = useState<ResponseReCaptchaError | null>(null);
 
   // v3
 
@@ -27,12 +51,9 @@ export const useRecaptcha = () => {
     try {
       const request = encryptAmiAES(JSON.stringify({ token }));
 
-      console.log("request encriptado", request);
-
       const { data } = await axios.post<ResponseReCaptcha>(
-        import.meta.env.VITE_API_RECAPTCHA + "/send",
+        import.meta.env.VITE_API_RECAPTCHA + "/sendWithCrypt",
         {
-          token,
           payload: {
             request,
           },
@@ -42,16 +63,15 @@ export const useRecaptcha = () => {
       setRecaptchaResponse(data);
       setIsDisabledButton(false);
 
-      const decryptRequest = JSON.parse(decryptAmiAES(request));
-
-      console.log("request desincriptado", decryptRequest);
-
       return data;
     } catch (error) {
+      const ResponseError = error as ResponseReCaptchaError;
+
+      setRecaptchaError(ResponseError)
       setIsDisabledButton(true);
       setIsActiveV2(true);
 
-      return error;
+      return ResponseError;
     }
   }
 
@@ -70,7 +90,7 @@ export const useRecaptcha = () => {
     } catch (error) {
       setIsDisabledButton(true);
 
-      return error;
+      return error as string;
     }
   }
 
@@ -92,6 +112,7 @@ export const useRecaptcha = () => {
     token,
     // response
     RecaptchaResponse,
+    RecaptchaError,
     // methods
     ResetRecaptchaResponse,
     RecaptchaValidationV3Google,

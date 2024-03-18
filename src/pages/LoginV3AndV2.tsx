@@ -1,10 +1,10 @@
 import { MessageBar, MessageBarType, TextField } from "@fluentui/react";
-import LoginLayout from "@/layout/LoginLayout";
 import { useLogin } from "@/hooks/useLogin";
-import { getErrorByEmail, getErrorByLength } from "../utils/rules";
-import ButtonPrimary from "@/packages/ButtonPrimary";
-import { useRecaptcha } from "@/hooks/useRecaptcha";
+import { getErrorByEmail, getErrorByLength } from "@/utils/rules";
 import { FormEvent } from "react";
+import { useRecaptcha } from "@/hooks/useRecaptcha";
+import LoginLayout from "@/layout/LoginLayout";
+import ButtonPrimary from "@/packages/ButtonPrimary";
 
 const LoginV3AndV2 = () => {
   const {
@@ -17,7 +17,7 @@ const LoginV3AndV2 = () => {
     ResetLoginResponse,
   } = useLogin();
 
-  const {isDisabledButton, RecaptchaResponse, RecaptchaValidationV3Context} = useRecaptcha()
+  const {isDisabledButton, RecaptchaResponse, RecaptchaError, RecaptchaValidationV3Context} = useRecaptcha()
 
   const handleSubmit = async (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
@@ -25,7 +25,7 @@ const LoginV3AndV2 = () => {
     ResetLoginResponse()
     
     await RecaptchaValidationV3Context()
-    await AuthSignIn()    
+    await AuthSignIn()
   };
 
   return (
@@ -66,7 +66,19 @@ const LoginV3AndV2 = () => {
               isMultiline={false}
               dismissButtonAriaLabel="Close"
             >
-              {RecaptchaResponse.mensaje}
+              Verificado correctamente
+            </MessageBar>
+          </div>
+        )}
+
+      {RecaptchaError && (
+          <div>
+            <MessageBar
+              messageBarType={MessageBarType.error}
+              isMultiline={false}
+              dismissButtonAriaLabel="Close"
+            >
+              No es correcto de Recaptcha
             </MessageBar>
           </div>
         )}
