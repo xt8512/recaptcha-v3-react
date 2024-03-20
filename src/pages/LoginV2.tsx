@@ -17,7 +17,7 @@ function LoginV2() {
 
   const recaptchaRef = useRef<ReCaptchaRef>(null)
   
-  const { loading, error, credentials, loginResponse, onChange, AuthSignIn, ResetLoginResponse } = useLogin();
+  const { loading, errorResponse, credentials, loginResponse, onChange, AuthSignIn, ResetLoginResponse } = useLogin();
 
   useEffect(() => {
       if (token.length) {
@@ -88,14 +88,14 @@ function LoginV2() {
         </div>
       )}
 
-      {error && (
+      {errorResponse && (
         <div>
           <MessageBar
             messageBarType={MessageBarType.error}
             isMultiline={false}
             dismissButtonAriaLabel="Close"
           >
-            {error.message}
+            {errorResponse.message}
           </MessageBar>
         </div>
       )}

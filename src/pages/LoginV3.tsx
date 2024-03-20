@@ -13,7 +13,7 @@ import LoginLayout from "@/layout/LoginLayout";
 import ButtonPrimary from "@/packages/ButtonPrimary";
 
 function LoginV3() {
-  const { loading, loginResponse, error, credentials, onChange, AuthSignIn, ResetLoginResponse } = useLogin();
+  const { loading, loginResponse, errorResponse, credentials, onChange, AuthSignIn, ResetLoginResponse } = useLogin();
   const { reCaptcha, onReCaptchaVerify, loading:loadingRecaptcha, ResetRecaptchaResponse} = useReCaptchaTools();
 
   const [showRecaptcha, setShowRecaptcha] = useState(false);
@@ -96,14 +96,14 @@ function LoginV3() {
           </div>
         )}
 
-        {error && (
+        {errorResponse && (
           <div>
             <MessageBar
               messageBarType={MessageBarType.error}
               isMultiline={false}
               dismissButtonAriaLabel="Close"
             >
-              {error.message}
+              {errorResponse.message}
             </MessageBar>
           </div>
         )}
