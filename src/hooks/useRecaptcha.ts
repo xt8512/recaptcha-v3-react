@@ -1,6 +1,6 @@
 import axios from "axios";
 import { encryptAmiAES } from "@/utils/crypto";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
 
 type ResponseReCaptchaPayload = {
@@ -37,11 +37,16 @@ export const useRecaptcha = () => {
   const [isDisabledButton, setIsDisabledButton] = useState(false);
   const [isActiveV2, setIsActiveV2] = useState(false);
   const [token, setToken] = useState<string>("");
+  const [tokenV2, setTokenV2] = useState<string>("");
 
   const [RecaptchaResponse, setRecaptchaResponse] = useState<ResponseReCaptcha | null>(null);
   const [RecaptchaError, setRecaptchaError] = useState<ResponseReCaptchaError | null>(null);
 
-  // v3
+  useEffect(() => {
+    if (tokenV2.length) {
+      setIsDisabledButton(false)
+    }
+}, [tokenV2])
 
   function ResetRecaptchaResponse() {
     setRecaptchaResponse(null);
@@ -105,11 +110,16 @@ export const useRecaptcha = () => {
     }
   }
 
+  function handleToken(token:string){
+    setTokenV2(token)
+  }
+
   return {
     // state
     isDisabledButton,
     isActiveV2,
     token,
+    tokenV2,
     // response
     RecaptchaResponse,
     RecaptchaError,
@@ -118,5 +128,9 @@ export const useRecaptcha = () => {
     RecaptchaValidationV3Google,
     RecaptchaValidationV3Provider,
     RecaptchaValidationV3Context,
+    //
+    handleToken,
+    setIsActiveV2,
+    setIsDisabledButton
   };
 };

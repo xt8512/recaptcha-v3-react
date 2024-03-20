@@ -1,8 +1,9 @@
 import { MessageBar, MessageBarType, TextField } from "@fluentui/react";
 import { useLogin } from "@/hooks/useLogin";
 import { getErrorByEmail, getErrorByLength } from "@/utils/rules";
-import { FormEvent } from "react";
+import { FormEvent, useRef } from "react";
 import { useRecaptcha } from "@/hooks/useRecaptcha";
+import ReCaptcha, { type ReCaptchaRef } from "@/components/ReCaptcha";
 import LoginLayout from "@/layout/LoginLayout";
 import ButtonPrimary from "@/packages/ButtonPrimary";
 
@@ -21,8 +22,14 @@ const LoginV3AndV2 = () => {
     isDisabledButton,
     RecaptchaResponse,
     RecaptchaError,
+    isActiveV2,
+    handleToken,
+    setIsActiveV2,
+    setIsDisabledButton
     // RecaptchaValidationV3Context,
   } = useRecaptcha();
+
+  const recaptchaRef = useRef<ReCaptchaRef>(null)
 
   const handleSubmit = async (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
@@ -30,7 +37,13 @@ const LoginV3AndV2 = () => {
     ResetLoginResponse();
 
     // await RecaptchaValidationV3Context();
-    await AuthSignIn();
+    try {
+      await AuthSignIn();
+    } catch (error) {
+      setIsActiveV2(true)
+      setIsDisabledButton(true)
+      recaptchaRef.current?.reset()
+    }
   };
 
   return (
@@ -65,6 +78,12 @@ const LoginV3AndV2 = () => {
       <div>
         <pre>{JSON.stringify(credentials, null, 2)}</pre>
       </div>
+
+      {isActiveV2 && (
+        <div>
+           <ReCaptcha ref={recaptchaRef} callback={handleToken} />
+        </div>
+      )}
 
       {RecaptchaResponse && (
         <div>
