@@ -1,3 +1,4 @@
+import { signIn, type ErrorResponse } from "@/amplify/signIn";
 import { FormEvent, useState } from "react";
 
 type Credentials = {
@@ -10,17 +11,6 @@ type LoginResponse = {
   success: boolean;
 } & Credentials;
 
-interface Error {
-  name: string;
-  message: string;
-  stack?: string;
-}
-
-type ErrorResponse = {
-  message: string;
-  success: boolean;
-};
-
 const initState: Credentials = {
   email: "jhonatan.valenzuela.19@outlook.com",
   password: "jU5m8Yc4W6bjr3m",
@@ -28,7 +18,7 @@ const initState: Credentials = {
 
 export const useLogin = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<ErrorResponse | null>(null);
+  const [errorResponse, setErrorResponse] = useState<ErrorResponse | null>(null);
   const [loginResponse, setLoginResponse] = useState<LoginResponse | null>(null);
   const [credentials, setCredentials] = useState<Credentials>(initState);
 
@@ -43,38 +33,27 @@ export const useLogin = () => {
 
   function ResetLoginResponse() {
     setLoginResponse(null);
-    setError(null);
+    setErrorResponse(null);
   }
 
   async function AuthSignIn() {
     setLoading(true);
 
     try {
-      return await new Promise<LoginResponse>((resolve, reject) => {
-        setTimeout(() => {
-          try {
-            if (credentials.password === initState.password) {
-              const login = {
-                ...credentials,
-                success: true,
-                message: "Ingreso correctamente",
-              };
-              setLoginResponse(login);
-              resolve(login);
-            } else {
-              throw new Error("Contraseña incorrecta");
-            }
-          } catch (error) {
-            const ErrorPromise = error as Error;
+      const amplify = await signIn(credentials.email, credentials.password)
 
-            reject({ success: false, message: ErrorPromise.message });
-          }
-        }, 1000);
-      });
+      const login = {
+        ...credentials,
+        success: true,
+        message: "Ingreso correctamente",
+      };
+      setLoginResponse(login);
+      
+      return amplify
     } catch (error) {
       const ErrorPromise = error as ErrorResponse;
 
-      setError(ErrorPromise);
+      setErrorResponse(ErrorPromise);
       
       throw ErrorPromise
     } finally {
@@ -84,7 +63,7 @@ export const useLogin = () => {
 
   return {
     loading,
-    error,
+    errorResponse,
     credentials,
     loginResponse,
     onChange,

@@ -52,7 +52,7 @@ export const useRecaptcha = () => {
       const request = encryptAmiAES(JSON.stringify({ token }));
 
       const { data } = await axios.post<ResponseReCaptcha>(
-        import.meta.env.VITE_API_RECAPTCHA + "/sendWithCrypt",
+        import.meta.env.VITE_API_RECAPTCHA + "/recaptcha",
         {
           payload: {
             request,

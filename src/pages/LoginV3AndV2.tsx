@@ -9,7 +9,7 @@ import ButtonPrimary from "@/packages/ButtonPrimary";
 const LoginV3AndV2 = () => {
   const {
     loading,
-    error,
+    errorResponse,
     credentials,
     loginResponse,
     onChange,
@@ -17,26 +17,32 @@ const LoginV3AndV2 = () => {
     ResetLoginResponse,
   } = useLogin();
 
-  const {isDisabledButton, RecaptchaResponse, RecaptchaError, RecaptchaValidationV3Context} = useRecaptcha()
+  const {
+    isDisabledButton,
+    RecaptchaResponse,
+    RecaptchaError,
+    // RecaptchaValidationV3Context,
+  } = useRecaptcha();
 
   const handleSubmit = async (ev: FormEvent<HTMLFormElement>) => {
     ev.preventDefault();
 
-    ResetLoginResponse()
-    
-    await RecaptchaValidationV3Context()
-    await AuthSignIn()
+    ResetLoginResponse();
+
+    // await RecaptchaValidationV3Context();
+    await AuthSignIn();
   };
 
   return (
     <LoginLayout onSubmit={handleSubmit} title="SignIn Both v3 & v2">
       {/* INPUTS  */}
 
-      <div>{JSON.stringify(isDisabledButton)}</div>
+      {/* <div>{JSON.stringify(isDisabledButton)}</div> */}
 
       <TextField
         label="Username"
         name="email"
+        autoComplete="email"
         value={credentials.email}
         onGetErrorMessage={getErrorByEmail}
         onChange={onChange}
@@ -48,6 +54,7 @@ const LoginV3AndV2 = () => {
         label="Password"
         type="password"
         name="password"
+        autoComplete="password"
         value={credentials.password}
         onGetErrorMessage={getErrorByLength}
         onChange={onChange}
@@ -60,28 +67,28 @@ const LoginV3AndV2 = () => {
       </div>
 
       {RecaptchaResponse && (
-          <div>
-            <MessageBar
-              messageBarType={MessageBarType.success}
-              isMultiline={false}
-              dismissButtonAriaLabel="Close"
-            >
-              Verificado correctamente
-            </MessageBar>
-          </div>
-        )}
+        <div>
+          <MessageBar
+            messageBarType={MessageBarType.success}
+            isMultiline={false}
+            dismissButtonAriaLabel="Close"
+          >
+            Verificado correctamente
+          </MessageBar>
+        </div>
+      )}
 
       {RecaptchaError && (
-          <div>
-            <MessageBar
-              messageBarType={MessageBarType.error}
-              isMultiline={false}
-              dismissButtonAriaLabel="Close"
-            >
-              No es correcto de Recaptcha
-            </MessageBar>
-          </div>
-        )}
+        <div>
+          <MessageBar
+            messageBarType={MessageBarType.error}
+            isMultiline={false}
+            dismissButtonAriaLabel="Close"
+          >
+            No es correcto de Recaptcha
+          </MessageBar>
+        </div>
+      )}
 
       {loginResponse && (
         <div>
@@ -95,14 +102,14 @@ const LoginV3AndV2 = () => {
         </div>
       )}
 
-      {error && (
+      {errorResponse && (
         <div>
           <MessageBar
             messageBarType={MessageBarType.error}
             isMultiline={false}
             dismissButtonAriaLabel="Close"
           >
-            {error.message}
+            {errorResponse.message}
           </MessageBar>
         </div>
       )}
