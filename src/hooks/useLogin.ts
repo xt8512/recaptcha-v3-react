@@ -1,4 +1,5 @@
 import { signIn, type ErrorResponse } from "@/amplify/signIn";
+import { useAuth } from "@/auth";
 import { FormEvent, useState } from "react";
 
 type Credentials = {
@@ -21,6 +22,7 @@ export const useLogin = () => {
   const [errorResponse, setErrorResponse] = useState<ErrorResponse | null>(null);
   const [loginResponse, setLoginResponse] = useState<LoginResponse | null>(null);
   const [credentials, setCredentials] = useState<Credentials>(initState);
+  const {getValidationData} = useAuth()
 
   function onChange(
     ev: FormEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -40,7 +42,11 @@ export const useLogin = () => {
     setLoading(true);
 
     try {
-      const amplify = await signIn(credentials.email, credentials.password)
+      const ValidationData = getValidationData()
+      
+      const amplify = await signIn(credentials.email, credentials.password, ValidationData)
+
+      console.log(amplify);      
 
       const login = {
         ...credentials,

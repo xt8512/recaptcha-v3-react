@@ -1,7 +1,7 @@
-import axios from "axios";
 import { encryptAmiAES } from "@/utils/crypto";
 import { useEffect, useState } from "react";
 import { useGoogleReCaptcha } from "react-google-recaptcha-v3";
+import { API } from "aws-amplify";
 
 type ResponseReCaptchaPayload = {
     response: string;
@@ -56,16 +56,22 @@ export const useRecaptcha = () => {
     try {
       const request = encryptAmiAES(JSON.stringify({ token }));
 
-      const { data } = await axios.post<ResponseReCaptcha>(
-        import.meta.env.VITE_API_RECAPTCHA + "/recaptcha",
-        {
+      // execute-api
+
+      const data = API.post("BROKERS",import.meta.env.VITE_API_RECAPTCHA + "/recaptcha", {
           payload: {
             request,
           },
-        }
-      );
+      })
 
-      setRecaptchaResponse(data);
+      console.log(data);      
+
+      // const { data } = await axios.post<ResponseReCaptcha>(
+      //   import.meta.env.VITE_API_RECAPTCHA + "/recaptcha",
+        
+      // );
+
+      // setRecaptchaResponse(data);
       setIsDisabledButton(false);
 
       return data;

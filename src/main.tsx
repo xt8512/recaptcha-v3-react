@@ -6,8 +6,11 @@ import { initializeIcons } from "@fluentui/react/lib/Icons";
 import { RouterProvider } from "react-router-dom";
 // route
 import router from "./router";
+// configuration
+import { setupConfiguration } from "./amplify/configuration";
 
 initializeIcons();
+setupConfiguration();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

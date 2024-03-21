@@ -25,8 +25,8 @@ const LoginV3AndV2 = () => {
     isActiveV2,
     handleToken,
     setIsActiveV2,
-    setIsDisabledButton
-    // RecaptchaValidationV3Context,
+    setIsDisabledButton,
+    RecaptchaValidationV3Context,
   } = useRecaptcha();
 
   const recaptchaRef = useRef<ReCaptchaRef>(null)
@@ -36,7 +36,7 @@ const LoginV3AndV2 = () => {
 
     ResetLoginResponse();
 
-    // await RecaptchaValidationV3Context();
+    await RecaptchaValidationV3Context();
     try {
       await AuthSignIn();
     } catch (error) {

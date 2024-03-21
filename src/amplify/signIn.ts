@@ -1,9 +1,13 @@
-import {Auth, Amplify} from 'aws-amplify'
+import { type AuthState } from '@/auth';
+import {Auth} from 'aws-amplify'
 
 import SHA384 from 'crypto-js/sha384';
-import { v4 as uuidv4 } from 'uuid';
 
 type ObjectEmpty = {
+  [key:string] : string
+}
+
+type ClientMetaData = {
   [key:string] : string
 }
 
@@ -64,31 +68,15 @@ export type ErrorResponse = {
   __type: string;
 };
 
-export async function signIn(username:string, password:string) {
-  const idClient = uuidv4();
+export async function signIn(username:string, password:string, ValidationData: AuthState ) {
   const passwordSHA = SHA384(password).toString();
-  const validationData = {
-    idClient: idClient,
-    userAgent: window.navigator.userAgent,
-    channelCode: 'BRK',
-  }
 
-  const amplifyConfig = {
-    Auth: {
-      region: import.meta.env.VITE_AWS_REGION,
-      userPoolId: import.meta.env.VITE_AWS_POOLS_ID,
-      userPoolWebClientId: import.meta.env.VITE_AWS_POOLS_WEB_CLIENT_ID,
-      identityPoolId: import.meta.env.VITE_AWS_COGNITO_POOL_IDENTITY_ID,
-      mandatorySignIn: true,
-    },
-    authenticationFlowType: "USER_SRP_AUTH",
-  };
-
-  Amplify.configure(amplifyConfig);
-  Auth.configure();
+  const ValidationDataTemp = { 
+    ...ValidationData,
+  } as ClientMetaData
 
   try {
-    const signIn: PromiseSignIn = await Auth.signIn(username, passwordSHA, validationData);
+    const signIn: PromiseSignIn = await Auth.signIn(username, passwordSHA, ValidationDataTemp);
 
     return signIn;
     // console.log(signIn);    
